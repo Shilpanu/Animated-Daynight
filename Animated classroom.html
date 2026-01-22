@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Day Night Cycle</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8E8 50%, #B0E0E6 100%);
+            transition: background 2s;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        body.night {
+            background: linear-gradient(to bottom, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+        
+        .sun-moon {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #FFD700;
+            box-shadow: 0 0 40px #FFA500;
+            transition: all 2s;
+        }
+        
+        .night .sun-moon {
+            background: #F0F8FF;
+            box-shadow: 0 0 40px white;
+            transform: translateX(-50%) translateY(400px);
+        }
+        
+        .bulb-container {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .bulb {
+            width: 80px;
+            height: 80px;
+            background: #555;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .bulb.on {
+            background: #FFD700;
+            box-shadow: 0 0 60px #FFD700;
+        }
+        
+        .bulb-base {
+            width: 40px;
+            height: 30px;
+            background: #777;
+            margin: 0 auto;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+        
+        .night .stars {
+            opacity: 1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .time-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+        }
+        
+        .houses {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .house {
+            width: 100px;
+            height: 80px;
+            background: #8B4513;
+            position: relative;
+        }
+        
+        .house:before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 40px solid #A52A2A;
+        }
+        
+        .window {
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            position: absolute;
+            bottom: 20px;
+            left: 35px;
+            border-radius: 5px;
+        }
+        
+        .night .window {
+            background: #222;
+        }
+        
+        .window.lit {
+            background: #FFD700 !important;
+            box-shadow: 0 0 20px #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="time-display">🌅 Day Time: 12:00 PM</div>
+    <div class="sun-moon"></div>
+    <div class="stars" id="stars"></div>
+    
+    <div class="houses">
+        <div class="house">
+            <div class="window" onclick="toggleWindow(this)"></div>
+        </div>
+        <div class="house">
+            <div class="window" onclick="toggleWindow(this)"></div>
+        </div>
+        <div class="house">
+            <div class="window" onclick="toggleWindow(this)"></div>
+        </div>
+    </div>
+    
+    <div class="bulb-container">
+        <div class="bulb" onclick="toggleBulb()"></div>
+        <div class="bulb-base"></div>
+        <button onclick="toggleDayNight()" style="margin-top: 20px; padding: 10px 20px;">Toggle Day/Night</button>
+    </div>
+
+    <script>
+        let isDay = true;
+        let isBulbOn = false;
+        let time = 12;
+        
+        // Create stars
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 1 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.opacity = Math.random() * 0.8 + 0.2;
+            document.getElementById('stars').appendChild(star);
+        }
+        
+        function toggleDayNight() {
+            isDay = !isDay;
+            document.body.classList.toggle('night');
+            
+            if (isDay) {
+                time = 12;
+                updateTime('PM');
+            } else {
+                time = 12;
+                updateTime('AM');
+            }
+        }
+        
+        function toggleBulb() {
+            const bulb = document.querySelector('.bulb');
+            isBulbOn = !isBulbOn;
+            bulb.classList.toggle('on');
+        }
+        
+        function toggleWindow(window) {
+            window.classList.toggle('lit');
+        }
+        
+        function updateTime(ampm) {
+            const display = document.querySelector('.time-display');
+            display.textContent = isDay ? '🌅 Day Time: ' : '🌃 Night Time: ';
+            display.textContent += time + ':00 ' + ampm;
+        }
+        
+        // Auto cycle day/night
+        setInterval(() => {
+            time++;
+            if (time > 12) time = 1;
+            
+            const ampm = isDay ? 'PM' : 'AM';
+            updateTime(ampm);
+            
+            // Auto switch to night at 7 PM
+            if (isDay && time === 7 && ampm === 'PM') {
+                toggleDayNight();
+            }
+            // Auto switch to day at 6 AM
+            else if (!isDay && time === 6 && ampm === 'AM') {
+                toggleDayNight();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
